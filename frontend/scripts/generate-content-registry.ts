@@ -7,6 +7,7 @@
  * single JSON registry that serves as the source of truth for the backend.
  */
 
+import { pathToFileURL } from 'url';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { glob } from 'glob';
@@ -2645,7 +2646,7 @@ EXIT CODES:
 async function main() {
   // Parse command-line arguments
   const args = process.argv.slice(2);
-  
+
   // Check for help flag first
   if (args.includes('--help') || args.includes('-h')) {
     printHelp();
@@ -2757,7 +2758,8 @@ async function main() {
 }
 
 // Execute if run directly
-const isMainModule = import.meta.url === `file://${process.argv[1]}`;
+// const isMainModule = import.meta.url === `file://${process.argv[1]}`;
+const isMainModule = import.meta.url === pathToFileURL(process.argv[1]).href;
 if (isMainModule) {
   main().catch((error) => {
     console.error('Error:', error);

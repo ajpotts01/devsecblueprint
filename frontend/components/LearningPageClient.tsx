@@ -1,19 +1,26 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useCallback } from 'react';
-import { Sidebar } from '@/components/layout/Sidebar';
-import { Module } from '@/lib/types';
-import { useProgress } from '@/lib/hooks/useProgress';
-import { useAllProgress } from '@/lib/hooks/useAllProgress';
+import { useEffect, useState, useCallback } from "react";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { Module } from "@/lib/types";
+import { useProgress } from "@/lib/hooks/useProgress";
+import { useAllProgress } from "@/lib/hooks/useAllProgress";
 
 interface LearningPageClientProps {
   modules: Module[];
   currentPageId: string;
+  currentLearningPath: string;
   contentPath: string;
   isCapstone?: boolean;
 }
 
-export function LearningPageClient({ modules: initialModules, currentPageId, contentPath, isCapstone = false }: LearningPageClientProps) {
+export function LearningPageClient({
+  modules: initialModules,
+  currentPageId,
+  currentLearningPath,
+  contentPath,
+  isCapstone = false,
+}: LearningPageClientProps) {
   const [modules, setModules] = useState(initialModules);
   const { saveProgress } = useProgress();
   const { progress } = useAllProgress();
@@ -24,7 +31,7 @@ export function LearningPageClient({ modules: initialModules, currentPageId, con
     if (isCapstone) {
       return;
     }
-    
+
     // Check if already completed using either page ID or content path
     if (progress[currentPageId] || progress[contentPath]) {
       return;
@@ -39,7 +46,7 @@ export function LearningPageClient({ modules: initialModules, currentPageId, con
   //     const scrollTop = window.scrollY;
   //     const windowHeight = window.innerHeight;
   //     const documentHeight = document.documentElement.scrollHeight;
-  //     
+  //
   //     // Check if user is within 100px of the bottom
   //     if (scrollTop + windowHeight >= documentHeight - 100) {
   //       markComplete();
@@ -52,20 +59,20 @@ export function LearningPageClient({ modules: initialModules, currentPageId, con
 
   // Update modules with progress from backend
   useEffect(() => {
-    const updatedModules = initialModules.map(module => ({
+    const updatedModules = initialModules.map((module) => ({
       ...module,
-      pages: module.pages.map(page => {
+      pages: module.pages.map((page) => {
         // Extract the content path from the slug (remove /learn/ prefix)
-        const contentPath = page.slug.replace('/learn/', '');
+        const contentPath = page.slug.replace("/learn/", "");
         // Check if this page is completed using the full path format
         const isCompleted = progress[contentPath] || false;
         return {
           ...page,
-          completed: isCompleted
+          completed: isCompleted,
         };
-      })
+      }),
     }));
-    
+
     setModules(updatedModules);
   }, [progress, initialModules]);
 
@@ -80,6 +87,7 @@ export function LearningPageClient({ modules: initialModules, currentPageId, con
   return (
     <Sidebar
       modules={modules}
+      currentLearningPath={currentLearningPath}
       currentPageId={currentPageId}
     />
   );
